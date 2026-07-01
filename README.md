@@ -24,8 +24,7 @@ See repositoorium sisaldab kõiki minu DACA kursuse projekte, ülesandeid ja por
 
 ## Screenshots
 
-**Week 0 – GitHub ja Supabase**
-![Week 1 - Tulemused](screenshots/week1_results_screenshot.png)
+(https://github.com/dmitri-postolaki/-daca-portfolio/tree/main/screenshots)
 
 *(Siia tulevad järgmiste nädalate screenshot'id)*
 
