@@ -5,7 +5,7 @@
 - [Tulemuste screenshot](./individual/week2_results_screenshot.png)
 
 ## Team Work
-- [Data Landscape](./team/week2_data_landscape.md)
+- https://github.com/kolgalys-max/urbanstyle-team-3/tree/main/week-2
 
 ---
 
