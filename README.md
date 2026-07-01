@@ -25,7 +25,7 @@ See repositoorium sisaldab kõiki minu DACA kursuse projekte, ülesandeid ja por
 ## Screenshots
 
 **Week 0 – GitHub ja Supabase**
-![Week 0 Screenshot](week1_results_screenshot.png)
+![Week 1 - Tulemused](screenshots/week1_results_screenshot.png)
 
 *(Siia tulevad järgmiste nädalate screenshot'id)*
 
