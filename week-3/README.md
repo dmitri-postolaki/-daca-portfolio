@@ -1,13 +1,19 @@
 # Week 3 SQL JOINs
+
 Week3 Grupitöö
+
 Minu roll oli Valideerimine & QA + ärisüntees
 Panin kokku kõikide rollide tööd ja tulemused, valideerisin tulemused.
 Tegin powerpoint slaide grupitöö esitluse jaoks
+
 Week3 grupitöö link
 https://github.com/kolgalys-max/urbanstyle-team-3/tree/main/week-3
 
 
-Week3 SQLJOINs  Kodutöö 
+Week3 SQLJOINs  
+
+Kodutöö 
+
 Harjutasin INNER JOIN, LEFT JOIN JA RIGHT JOIN päringud SupaBase SQLis
 
 SELECT 1;
