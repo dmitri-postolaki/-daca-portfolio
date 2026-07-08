@@ -14,9 +14,8 @@ Week3 grupitöö link
 https://github.com/kolgalys-max/urbanstyle-team-3/tree/main/week-3
 
 
-Week3 SQL JOINs  
 
-Kodutöö 
+Week 3 Kodutöö 
 
 Harjutasin INNER JOIN, LEFT JOIN JA RIGHT JOIN päringud SupaBase SQLis
 
