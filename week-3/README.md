@@ -1,1 +1,233 @@
-# Week 3
+# Week 3 SQL JOINs
+Week3 Grupitöö
+Minu roll oli Valideerimine & QA + ärisüntees
+Panin kokku kõikide rollide tööd ja tulemused, valideerisin tulemused.
+Tegin powerpoint slaide grupitöö esitluse jaoks
+Week3 grupitöö link
+https://github.com/kolgalys-max/urbanstyle-team-3/tree/main/week-3
+
+
+Week3 SQLJOINs  Kodutöö 
+Harjutasin INNER JOIN, LEFT JOIN JA RIGHT JOIN päringud SupaBase SQLis
+
+SELECT 1;
+
+-- Kustuta duplikaadid sales tabelist (sama loogika mis W2 sales_test peal)
+DELETE FROM sales
+WHERE id NOT IN (
+    SELECT MIN(id)
+    FROM sales
+    GROUP BY sale_id
+);
+
+-- Paranda tuleviku kuupäevad
+UPDATE sales
+SET sale_date = CURRENT_DATE
+WHERE sale_date > CURRENT_DATE;
+
+-- Ühtlusta klientide linnanimed (muidu GROUP BY city näitab 50+ varianti 12 asemel)
+UPDATE customers
+SET city = INITCAP(TRIM(city))
+WHERE city IS NOT NULL;
+
+-- Kontrolli tulemusi
+SELECT COUNT(*) AS sales_ridu FROM sales;
+SELECT COUNT(DISTINCT city) AS linnu FROM customers;
+
+
+--INNER JOIN harjutused
+
+-- INNER JOIN: kliendid koos nende müükidega
+SELECT
+    c.first_name,
+    c.last_name,
+    c.city,
+    s.sale_id,
+    s.sale_date,
+    s.total_price
+FROM sales s
+INNER JOIN customers c ON s.customer_id = c.customer_id
+ORDER BY s.total_price DESC
+LIMIT 20;
+
+-- rakenda uues kontekstis
+SELECT 
+    p.product_name AS "toote_nimi",
+    p.category AS "kategooria",
+    s.quantity AS "müüdud_kogus",
+    p.retail_price AS "ühikuhind"
+FROM sales s
+JOIN products p ON s.product_id = p.product_id
+ORDER BY s.quantity DESC
+LIMIT 15;
+-- variant 2, vist õige päring
+SELECT 
+    p.product_name AS "toote_nimi",   -- või p.name
+    p.category AS "kategooria",
+    SUM(s.quantity) AS "müüdud_kogus",   -- kui tahad kogukogust toote kohta
+    p.retail_price AS "ühikuhind"
+FROM sales s
+JOIN products p ON s.product_id = p.product_id
+GROUP BY p.product_id, p.product_name, p.category, p.retail_price
+ORDER BY "müüdud_kogus" DESC
+LIMIT 15;
+
+--Harjutus 1C: Rakendus — oma päring 
+
+SELECT 
+    c.city AS "linn",
+    COUNT(s.sale_id) AS "tellimuste_arv",
+    SUM(s.quantity) AS "müüdud_kogus",
+    ROUND(AVG(s.quantity * p.retail_price), 2) AS "keskmine_tellimuse_väärtus"
+FROM sales s
+INNER JOIN products p ON s.product_id = p.product_id
+INNER JOIN customers c ON s.customer_id = c.customer_id
+WHERE s.sale_date >= CURRENT_DATE - INTERVAL '30 days'
+GROUP BY c.city
+ORDER BY "tellimuste_arv" DESC
+LIMIT 10;
+
+-- LEFT JOIN harjutused
+
+-- järgi malli
+-- Kadunud kliendid: LEFT JOIN + WHERE IS NULL
+SELECT
+    c.customer_id,
+    c.first_name || ' ' || c.last_name AS nimi,
+    c.email,
+    c.city,
+    c.registration_date
+FROM customers c
+LEFT JOIN sales s ON c.customer_id = s.customer_id
+WHERE s.sale_id IS NULL
+ORDER BY c.registration_date DESC;
+
+-- Võrdluseks: INNER JOIN (ainult aktiivsed kliendid)
+SELECT COUNT(DISTINCT c.customer_id) AS aktiivseid_kliente
+FROM sales s
+INNER JOIN customers c ON s.customer_id = c.customer_id;
+
+--tooted ilma müügita
+SELECT 
+    p.product_name AS "toote_nimi",
+    p.category AS "kategooria",
+    p.retail_price AS "hind",
+    p.product_id AS "toote_id"   -- abiks, kui vaja toodet tuvastada
+FROM products p
+LEFT JOIN sales s ON p.product_id = s.product_id
+WHERE s.sale_id IS NULL
+ORDER BY p.retail_price DESC;   -- kõige kallimad müümata tooted eespool
+
+--kadunud klientide analüüs
+SELECT 
+    c.city AS "linn",
+    COUNT(c.customer_id) AS "kadunud_klientide_arv",
+    MIN(c.registration_date) AS "vanim_registreerimine",
+    COUNT(DISTINCT c.customer_id) AS "unikaalsed_kadunud_klendid"  -- kindluse mõttes
+FROM customers c
+LEFT JOIN sales s ON c.customer_id = s.customer_id
+WHERE s.sale_id IS NULL
+GROUP BY c.city
+ORDER BY "kadunud_klientide_arv" DESC;
+
+
+--Mitme tabeli JOIN harjutused
+
+-- 3 tabeli JOIN: kes ostis mida?
+SELECT
+    c.first_name || ' ' || c.last_name AS klient,
+    c.city AS linn,
+    s.sale_date AS müügi_kuupäev,
+    p.product_name AS toode,
+    p.category AS kategooria,
+    s.quantity AS kogus,
+    s.unit_price AS ühikuhind,
+    s.total_price AS rea_summa
+FROM sales s
+INNER JOIN customers c ON s.customer_id = c.customer_id
+INNER JOIN products p ON s.product_id = p.product_id
+ORDER BY rea_summa DESC
+LIMIT 20;
+
+
+--Anna raport
+SELECT 
+    c.city AS "linn",
+    p.category AS "kategooria",
+    SUM(s.total_price) AS "kogumüük",
+    COUNT(DISTINCT s.sale_id) AS "tellimuste_arv",
+    ROUND(SUM(s.total_price) / COUNT(DISTINCT s.sale_id), 2) AS "keskmine_tellimuse_väärtus"
+FROM sales s
+INNER JOIN customers c ON s.customer_id = c.customer_id
+INNER JOIN products p ON s.product_id = p.product_id
+GROUP BY c.city, p.category
+ORDER BY "kogumüük" DESC;
+
+--Harjutus 3C: Rakendus — avatud ülesanne
+
+SELECT 
+    c.customer_id,
+    c.first_name || ' ' || c.last_name AS "kliendi_nimi",
+    c.city AS "linn",
+    COUNT(DISTINCT s.sale_id) AS "ostude_arv",
+    ROUND(AVG(s.total_price), 2) AS "keskmine_ostu_summa",
+    MAX(p.retail_price) AS "kõrgeim_toote_hind",
+    STRING_AGG(DISTINCT p.category, ', ') AS "ostetud_kategooriad"
+FROM customers c
+INNER JOIN sales s ON c.customer_id = s.customer_id
+INNER JOIN products p ON s.product_id = p.product_id
+WHERE p.retail_price > 100
+GROUP BY 
+    c.customer_id, 
+    c.first_name, 
+    c.last_name, 
+    c.city
+ORDER BY "keskmine_ostu_summa" DESC, "kõrgeim_toote_hind" DESC
+LIMIT 15;
+
+--Täielik Kliendiraport
+
+--TOP 20 klienti koos tootekategooriatega
+SELECT 
+    c.customer_id,
+    c.first_name || ' ' || c.last_name AS "kliendi_nimi",
+    c.city AS "linn",
+    p.category AS "kategooria",
+    SUM(s.total_price) AS "kogumüük",
+    COUNT(DISTINCT s.sale_id) AS "tehingute_arv"
+FROM customers c
+INNER JOIN sales s ON c.customer_id = s.customer_id
+INNER JOIN products p ON s.product_id = p.product_id
+GROUP BY 
+    c.customer_id, 
+    c.first_name, 
+    c.last_name, 
+    c.city, 
+    p.category
+ORDER BY "kogumüük" DESC
+LIMIT 20;
+
+--Kadunud kliendid linnade kaupa
+SELECT 
+    c.city AS "linn",
+    COUNT(c.customer_id) AS "kadunud_klientide_arv",
+    COUNT(DISTINCT c.customer_id) AS "unikaalsed_kadunud_kliendid",
+    MIN(c.registration_date) AS "vanim_registreerumise_kuupäev"
+FROM customers c
+LEFT JOIN sales s ON c.customer_id = s.customer_id
+WHERE s.sale_id IS NULL
+GROUP BY c.city
+ORDER BY "kadunud_klientide_arv" DESC;
+
+--Müümata tooted kategooriate kaupa
+SELECT 
+    p.category AS "kategooria",
+    COUNT(p.product_id) AS "müümata_toodete_arv",
+    SUM(p.retail_price) AS "müümata_toodete_koguväärtus",
+    ROUND(AVG(p.retail_price), 2) AS "keskmine_hind",
+    STRING_AGG(p.product_name, ', ') AS "müümata_toodete_nimed"
+FROM products p
+LEFT JOIN sales s ON p.product_id = s.product_id
+WHERE s.sale_id IS NULL
+GROUP BY p.category
+ORDER BY "müümata_toodete_arv" DESC;
