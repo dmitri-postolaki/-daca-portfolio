@@ -5,5 +5,6 @@
 - LinkedIn ja Võrgustik - Nähtavus DA Turul ✅
 - Värbamis juhendi tegemine gruppitöös ✅
 
-- CV - file:///C:/Users/dimpo/Desktop/Data%20Analyst/DP%20CV.pdf
+- CV - [DP CV.pdf](https://github.com/user-attachments/files/31526610/DP.CV.pdf)
+
 - LinkedIn - https://www.linkedin.com/in/dmitri-postolaki/
